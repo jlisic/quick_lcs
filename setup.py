@@ -5,7 +5,9 @@ import numpy as np
 module = Extension(
     'quick_lcs.string_length_sum',
     sources=['quick_lcs/string_length_sum.c'],
-    include_dirs=[np.get_include()]
+    include_dirs=[np.get_include()],
+    extra_compile_args=['-fopenmp'],  # Add OpenMP flags for GCC
+    extra_link_args=['-fopenmp']       # Add OpenMP flags for linking
 )
 
 # Setup function to build the package

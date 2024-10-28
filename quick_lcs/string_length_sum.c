@@ -3,6 +3,7 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include <string.h>
+#include <omp.h>  // Include OpenMP header
 
 // Function to calculate length sums
 static PyObject* length_sum(PyObject* self, PyObject* args) {
@@ -25,7 +26,8 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    // Iterate over both input arrays
+    // Iterate over both input arrays in parallel
+    #pragma omp parallel for
     for (npy_intp i = 0; i < PyArray_SIZE(arr1); i++) {
         // Get Python string objects
         PyObject *str_obj1 = PyArray_GETITEM(arr1, PyArray_GETPTR1(arr1, i));
@@ -33,6 +35,7 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
 
         // Check that both are strings
         if (!PyUnicode_Check(str_obj1) || !PyUnicode_Check(str_obj2)) {
+            #pragma omp cancel parallel // Cancel the parallel region on error
             PyErr_SetString(PyExc_TypeError, "Both arrays must contain only strings.");
             return NULL;
         }
@@ -43,17 +46,18 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
 
         // Check for NULL (encoding error)
         if (str1 == NULL || str2 == NULL) {
+            #pragma omp cancel parallel // Cancel the parallel region on error
             PyErr_SetString(PyExc_ValueError, "Error converting strings to UTF-8.");
             return NULL;  // Propagate error if encoding fails
         }
 
-        // Calculate the lengths
-        double len1 = (double)strlen(str1);
-        double len2 = (double)strlen(str2);
-        double length_sum = len1 + len2;
+        // Calculate the lengths of each string
+        int len1 = strlen(str1);
+        int len2 = strlen(str2);
+        double length_sum = (double)len1 + (double)len2;  // Explicitly casting lengths to double
 
         // Set the result in place
-        *(double *) PyArray_GETPTR1(result, i) = length_sum;
+        *(double *) PyArray_GETPTR1(result, i) = length_sum;  // Correctly assign to result
     }
 
     // Return None
