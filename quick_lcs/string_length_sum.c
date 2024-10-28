@@ -26,6 +26,9 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
         return NULL;
     }
 
+    // Flag to indicate if an error occurs
+    int error_flag = 0;
+
     // Iterate over both input arrays in parallel
     #pragma omp parallel for
     for (npy_intp i = 0; i < PyArray_SIZE(arr1); i++) {
@@ -35,9 +38,8 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
 
         // Check that both are strings
         if (!PyUnicode_Check(str_obj1) || !PyUnicode_Check(str_obj2)) {
-            #pragma omp cancel parallel // Cancel the parallel region on error
-            PyErr_SetString(PyExc_TypeError, "Both arrays must contain only strings.");
-            return NULL;
+            error_flag = 1;  // Set error flag
+            continue;        // Skip this iteration
         }
 
         // Get UTF-8 encoded strings
@@ -46,9 +48,8 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
 
         // Check for NULL (encoding error)
         if (str1 == NULL || str2 == NULL) {
-            #pragma omp cancel parallel // Cancel the parallel region on error
-            PyErr_SetString(PyExc_ValueError, "Error converting strings to UTF-8.");
-            return NULL;  // Propagate error if encoding fails
+            error_flag = 1;  // Set error flag
+            continue;        // Skip this iteration
         }
 
         // Calculate the lengths of each string
@@ -58,6 +59,12 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
 
         // Set the result in place
         *(double *) PyArray_GETPTR1(result, i) = length_sum;  // Correctly assign to result
+    }
+
+    // Check for errors after the parallel region
+    if (error_flag) {
+        PyErr_SetString(PyExc_TypeError, "Both arrays must contain only strings, and all strings must be convertible to UTF-8.");
+        return NULL;
     }
 
     // Return None
