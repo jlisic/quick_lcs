@@ -7,30 +7,36 @@
 
 // Function to calculate length sums
 static PyObject* length_sum(PyObject* self, PyObject* args) {
-    PyArrayObject *arr1, *arr2, *result;
+    PyArrayObject *arr1, *arr2, *result *result_index;
+    size_t i;
 
     // Parse the input tuple (two NumPy arrays and one result array)
-    if (!PyArg_ParseTuple(args, "O!O!O!", &PyArray_Type, &arr1, &PyArray_Type, &arr2, &PyArray_Type, &result)) {
+    if (!PyArg_ParseTuple(args, "O!O!O!O!", &PyArray_Type, &arr1, &PyArray_Type, &arr2, &PyArray_Type, &result, &PyArray_Type, &result_index)) {
         return NULL;
     }
 
     // Check if both input arrays have the same size
-    if (PyArray_SIZE(arr1) != PyArray_SIZE(arr2)) {
+    if (PyArray_SIZE(arr1) != PyArray_SIZE(result)) {
         PyErr_SetString(PyExc_ValueError, "Input arrays must have the same size.");
         return NULL;
     }
 
-    // Check if the result array is a double array of the correct size
-    if (PyArray_SIZE(result) != PyArray_SIZE(arr1) || PyArray_TYPE(result) != NPY_DOUBLE) {
+    // Check if both input arrays have the same size
+    if (PyArray_SIZE(arr1) != PyArray_SIZE(result_index)) {
+        PyErr_SetString(PyExc_ValueError, "Input arrays must have the same size.");
+        return NULL;
+    }
+
+    // Check types
+    if (PyArray_TYPE(result) != NPY_DOUBLE) {
         PyErr_SetString(PyExc_ValueError, "Result array must be a double array of the same size.");
         return NULL;
     }
 
-    // Flag to indicate if an error occurs
+    // create strings to work with
     int error_flag = 0;
 
-    // Iterate over both input arrays in parallel
-    #pragma omp parallel for
+    // Iterate over both input arrays in parallel   
     for (npy_intp i = 0; i < PyArray_SIZE(arr1); i++) {
         // Get Python string objects
         PyObject *str_obj1 = PyArray_GETITEM(arr1, PyArray_GETPTR1(arr1, i));
