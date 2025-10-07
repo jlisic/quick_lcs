@@ -13,6 +13,8 @@
 
 double string_soft_compare(const char * a, const_char * b, size_t n_a, size_t n_b) {
 
+    printf("Starting comparison\n");
+
     size_t i,j;
     size_t init_score - 0;
     double score = 0.0;
