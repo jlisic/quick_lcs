@@ -11,7 +11,7 @@
 
 
 
-double string_soft_compare(const char * a, const_char * b, size_t n_a, size_t n_b) {
+double string_soft_compare(const char * a, const char * b, size_t n_a, size_t n_b) {
 
     printf("Starting comparison\n");
 
@@ -126,7 +126,7 @@ void C_string_compare( const char ** x, const char ** y, double * out, size_t n_
 
 // Function to calculate length sums
 static PyObject* length_sum(PyObject* self, PyObject* args) {
-    PyArrayObject *arr1, *arr2, *result *result_index;
+    PyArrayObject *arr1, *arr2, *result, *result_index;
     size_t i;
     const char *str1, *str2;
     size_t len1, len2;
