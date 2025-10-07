@@ -53,7 +53,7 @@ double string_soft_compare(const char * a, const char * b, size_t n_a, size_t n_
     x=NULL;
 
     // normalize the score
-    if n_a > n_b {
+    if (n_a > n_b) {
         score = (double) init_score / (double) n_a;
     } else {
         score = (double) init_score / (double) n_b;
