@@ -16,11 +16,11 @@ double string_soft_compare(const char * a, const char * b, size_t n_a, size_t n_
     printf("Starting comparison\n");
 
     size_t i,j;
-    size_t init_score - 0;
+    size_t init_score = 0;
     double score = 0.0;
 
     // handle edge cases
-    if n_a == 0 || n_b == 0 {
+    if (n_a == 0 || n_b == 0) {
         return score;
     }
 
