@@ -130,6 +130,7 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
     size_t i;
     const char *str1, *str2;
     size_t len1, len2;
+    int error_flag = 0;
 
     double score, max_score;
     PyObject *str_obj1, *str_obj2;
@@ -157,9 +158,6 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    // create strings to work with
-    int error_flag = 0;
-
     // Iterate over both input arrays in parallel   
     for (npy_intp i = 0; i < PyArray_SIZE(arr1); i++) {
 
@@ -185,7 +183,7 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
 
         // et string length
         len1 = strlen(str1);
-        max_score = 0
+        max_score = 0;
 
         
         for (npy_intp j = 0; j < PyArray_SIZE(arr2); j++) {
