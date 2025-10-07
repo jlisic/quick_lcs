@@ -135,22 +135,28 @@ static PyObject* length_sum(PyObject* self, PyObject* args) {
     double score, max_score;
     PyObject *str_obj1, *str_obj2;
 
-    // Parse the input tuple (two NumPy arrays and one result array)
+    // Parse the input tuple (two NumPy arrays and one result array) -- this will be used when we add on cached results
+    /*
     if (!PyArg_ParseTuple(args, "O!O!O!O!", &PyArray_Type, &arr1, &PyArray_Type, &arr2, &PyArray_Type, &result, &PyArray_Type, &result_index)) {
         return NULL;
     }
-
+    */
+    if (!PyArg_ParseTuple(args, "O!O!O!", &PyArray_Type, &arr1, &PyArray_Type, &arr2, &PyArray_Type, &result)) {
+        return NULL;
+    }
     // Check if both input arrays have the same size
     if (PyArray_SIZE(arr1) != PyArray_SIZE(result)) {
         PyErr_SetString(PyExc_ValueError, "Input arrays must have the same size.");
         return NULL;
     }
 
-    // Check if both input arrays have the same size
+    // Check if both input arrays have the same size -- this will be used when we add on cached results
+    /*
     if (PyArray_SIZE(arr1) != PyArray_SIZE(result_index)) {
         PyErr_SetString(PyExc_ValueError, "Input arrays must have the same size.");
         return NULL;
     }
+    */
 
     // Check types
     if (PyArray_TYPE(result) != NPY_DOUBLE) {
